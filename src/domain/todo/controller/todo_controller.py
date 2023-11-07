@@ -47,11 +47,14 @@ def get_todos(order: str | None = None):
 
 @router.get('/todos/{todo_id}', status_code=200)
 def get_todo(todo_id: int):
-    return todo_data.get(todo_id, {})
+    if not (todo_id in todo_data):
+        raise HTTPException(status_code=404)
+    else:
+        return todo_data.get(todo_id, {})
 
 
 @router.patch('/todos/{todo_id}', status_code=200)
-def get_todo(
+def update_todo(
         todo_id: int,
         is_done: bool = Body(embed=True),
 ):
@@ -60,4 +63,15 @@ def get_todo(
     else:
         todo = todo_data.get(todo_id)
         todo['is_done'] = is_done
+    return todo
+
+
+@router.delete('/todos/{todo_id}', status_code=204)
+def delete_todo(
+        todo_id: int,
+):
+    if not (todo_id in todo_data):
+        raise HTTPException(status_code=404)
+    else:
+        todo = todo_data.pop(todo_id, None)
     return todo

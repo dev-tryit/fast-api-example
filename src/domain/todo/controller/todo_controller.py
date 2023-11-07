@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 
 from domain.todo.scheme.request.request_create_todo import RequestCreateToDo
 
@@ -28,7 +28,16 @@ def check_health():
     return {'ping': 'pong'}
 
 
-@router.get('/todos')
+@router.post('/todo', status_code=201)
+def create_todo(request: RequestCreateToDo):
+    if request.id in todo_data:
+        raise HTTPException(status_code=409)
+    else:
+        todo_data[request.id] = request.dict()
+    return todo_data[request.id]
+
+
+@router.get('/todos', status_code=200)
 def get_todos(order: str | None = None):
     ret = list(todo_data.values())
     if order == "DESC":
@@ -36,15 +45,19 @@ def get_todos(order: str | None = None):
     return ret
 
 
-@router.get('/todos/{id}')
-def get_todo(id: int):
-    return todo_data.get(id, {})
+@router.get('/todos/{todo_id}', status_code=200)
+def get_todo(todo_id: int):
+    return todo_data.get(todo_id, {})
 
 
-@router.post('/todo')
-def create_todo(request: RequestCreateToDo):
-    if request.id in todo_data:
-        raise HTTPException(status_code=409)
+@router.patch('/todos/{todo_id}', status_code=200)
+def get_todo(
+        todo_id: int,
+        is_done: bool = Body(embed=True),
+):
+    if not (todo_id in todo_data):
+        raise HTTPException(status_code=404)
     else:
-        todo_data[request.id] = request.dict()
-    return todo_data[request.id]
+        todo = todo_data.get(todo_id)
+        todo['is_done'] = is_done
+    return todo

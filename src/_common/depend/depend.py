@@ -1,7 +1,7 @@
 from _common.scheme.api_environment import ApiEnvironment
 from _common.setting.setting import api_environment
 from api.todo.todo_api import TodoApi
-from api.todo.todo_api_printer import TodoApiPrinter
+from api.todo.todo_api_mysql import TodoApiMySql
 
 
 def inject_dependency_by_environment(app):
@@ -16,15 +16,15 @@ def inject_dependency_by_environment(app):
 
 
 def _by_dev(app):
-    app.dependency_overrides[TodoApi] = lambda: TodoApiPrinter()
+    app.dependency_overrides[TodoApi] = lambda: TodoApiMySql()
     pass
 
 
 def _by_qa(app):
-    app.dependency_overrides[TodoApi] = lambda: TodoApiPrinter()
+    app.dependency_overrides[TodoApi] = lambda: TodoApiMySql()
     pass
 
 
 def _by_prod(app):
-    app.dependency_overrides[TodoApi] = lambda: TodoApiPrinter()
+    app.dependency_overrides[TodoApi] = lambda: TodoApiMySql()
     pass

@@ -1,6 +1,7 @@
-from fastapi import Body
+from fastapi import Depends
 
 from _common.exception.api_exception import ApiException
+from api.todo.todo_api import TodoApi
 from domain.self_management.scheme.vo.todo_create_vo import TodoCreateVo
 
 todo_list = {
@@ -23,6 +24,9 @@ todo_list = {
 
 
 class SelfManagementService:
+    def __init__(self, todo_api: TodoApi = Depends()):
+        self.todo_api = todo_api
+
     # noinspection PyMethodMayBeStatic
     def create_todo(
             self,
@@ -58,7 +62,7 @@ class SelfManagementService:
     def update_todo(
             self,
             todo_id: int,
-            is_done: bool = Body(embed=True),
+            is_done: bool,
     ):
         if not (todo_id in todo_list):
             raise ApiException(status_code=404)

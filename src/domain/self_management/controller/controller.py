@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 
-from domain.todo.scheme.request.request_create_todo import RequestCreateToDo
+from domain.self_management.scheme.request.request_create_todo import RequestCreateToDo
 
 router = APIRouter()
 

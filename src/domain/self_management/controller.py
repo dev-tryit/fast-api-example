@@ -1,15 +1,17 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
 
 from _common.exception.api_exception import ApiException
 from domain.self_management.scheme.request.todo_create_reqeust import TodoCreateRequest
 from domain.self_management.service import SelfManagementService
 
 router = APIRouter()
-service = SelfManagementService()
 
 
 @router.post('/todo', status_code=201)
-def create_todo(request: TodoCreateRequest):
+def create_todo(
+        request: TodoCreateRequest,
+        service: SelfManagementService = Depends(),
+):
     try:
         # TODO: validate
         response = service.create_todo(request.to_vo())
@@ -19,7 +21,10 @@ def create_todo(request: TodoCreateRequest):
 
 
 @router.get('/todos', status_code=200)
-def get_todos(order: str | None = None):
+def get_todos(
+        order: str | None = None,
+        service: SelfManagementService = Depends(),
+):
     try:
         # TODO: validate
         response = service.get_todos(order)
@@ -29,7 +34,10 @@ def get_todos(order: str | None = None):
 
 
 @router.get('/todos/{todo_id}', status_code=200)
-def get_todo(todo_id: int):
+def get_todo(
+        todo_id: int,
+        service: SelfManagementService = Depends(),
+):
     try:
         # TODO: validate
         response = service.get_todo(todo_id)
@@ -42,6 +50,7 @@ def get_todo(todo_id: int):
 def update_todo(
         todo_id: int,
         is_done: bool = Body(embed=True),
+        service: SelfManagementService = Depends(),
 ):
     try:
         # TODO: validate
@@ -54,6 +63,7 @@ def update_todo(
 @router.delete('/todos/{todo_id}', status_code=204)
 def delete_todo(
         todo_id: int,
+        service: SelfManagementService = Depends(),
 ):
     try:
         # TODO: validate

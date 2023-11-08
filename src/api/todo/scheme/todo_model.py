@@ -1,10 +1,6 @@
 from sqlalchemy import Column, Integer, Boolean, String
-from sqlalchemy.orm import declarative_base
 
-from _common.database.mysql_connection import engine
-
-Base = declarative_base()
-Base.metadata.create_all(bind=engine)
+from _common.connection.mysql_connection import Base
 
 
 class ToDoModel(Base):

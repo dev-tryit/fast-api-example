@@ -1,4 +1,4 @@
-from api.todo.todo_api import TodoApi
+from api.todo.api import TodoApi
 
 
 class TodoApiPrinter(TodoApi):

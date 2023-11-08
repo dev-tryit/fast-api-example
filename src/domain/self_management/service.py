@@ -1,7 +1,7 @@
 from fastapi import Depends
 
 from _common.exception.my_api_exception import MyApiException
-from api.todo.todo_api import TodoApi
+from api.todo.api_mysql import TodoApiMySql
 from domain.self_management.scheme.vo.todo_create_vo import TodoCreateVo
 
 todo_list = {
@@ -24,7 +24,7 @@ todo_list = {
 
 
 class SelfManagementService:
-    def __init__(self, todo_api: TodoApi = Depends()):
+    def __init__(self, todo_api: TodoApiMySql = Depends(TodoApiMySql)):
         self.todo_api = todo_api
 
     # noinspection PyMethodMayBeStatic
@@ -43,10 +43,11 @@ class SelfManagementService:
             self,
             order: str | None = None,
     ):
-        ret = list(todo_list.values())
+        todos = self.todo_api.get_all()
+
         if order == "DESC":
-            return ret[::-1]
-        return ret
+            return todos[::-1]
+        return todos
 
     # noinspection PyMethodMayBeStatic
     def get_todo(

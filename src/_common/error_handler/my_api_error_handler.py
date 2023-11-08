@@ -1,7 +1,7 @@
 # error_handlers.py
 import traceback
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from _common.exception.my_api_exception import MyApiException
@@ -9,7 +9,7 @@ from _common.exception.my_api_exception import MyApiException
 
 class MyApiErrorHandler:
     @staticmethod
-    def handle(exc: Exception):
+    def handle(request: Request, exc: Exception):
         if isinstance(exc, MyApiException):
             return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         elif isinstance(exc, HTTPException):

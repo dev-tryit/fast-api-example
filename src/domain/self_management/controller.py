@@ -14,7 +14,7 @@ def create_todo(
 ):
     try:
         # TODO: validate
-        response = service.create_todo(request.to_vo())
+        result = service.create_todo(request.to_vo())
         return response
     except MyApiException as e:
         raise e
@@ -27,7 +27,8 @@ def get_todos(
 ):
     try:
         # TODO: validate
-        response = service.get_todos(order)
+        result = service.get_todos(order)
+        # TODO: result to response
         return response
     except MyApiException as e:
         raise e
@@ -40,7 +41,8 @@ def get_todo(
 ):
     try:
         # TODO: validate
-        response = service.get_todo(todo_id)
+        result = service.get_todo(todo_id)
+        # TODO: result to response
         return response
     except MyApiException as e:
         raise e
@@ -54,7 +56,8 @@ def update_todo(
 ):
     try:
         # TODO: validate
-        response = service.update_todo(todo_id, is_done)
+        result = service.update_todo(todo_id, is_done)
+        # TODO: result to response
         return response
     except MyApiException as e:
         raise e
@@ -67,7 +70,8 @@ def delete_todo(
 ):
     try:
         # TODO: validate
-        response = service.delete_todo(todo_id)
+        result = service.delete_todo(todo_id)
+        # TODO: result to response
         return response
     except MyApiException as e:
         raise e

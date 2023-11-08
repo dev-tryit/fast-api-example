@@ -22,7 +22,7 @@ def get_db():
         session.close()
 
 # interpreter 로 연결 확인 방법
-# from _common.database.mysql_connection import SessionFactory
+# from _common.connection.mysql_connection import SessionFactory
 # session = SessionFactory()
 # from sqlalchemy import select
 # session.scalar(select(1))

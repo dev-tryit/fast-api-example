@@ -1,15 +1,15 @@
-from _common.scheme.api_environment import ApiEnvironment
-from _common.setting.setting import api_environment
+from _common.scheme.my_environment import MyEnvironment
+from _common.setting.setting import my_environment
 from api.todo.todo_api import TodoApi
 from api.todo.todo_api_mysql import TodoApiMySql
 
 
 def inject_dependency_by_environment(app):
-    if api_environment == ApiEnvironment.dev:
+    if my_environment == MyEnvironment.dev:
         _by_dev(app)
-    elif api_environment == ApiEnvironment.qa:
+    elif my_environment == MyEnvironment.qa:
         _by_qa(app)
-    elif api_environment == ApiEnvironment.prod:
+    elif my_environment == MyEnvironment.prod:
         _by_qa(app)
     else:
         raise ValueError('unknown api_environment')

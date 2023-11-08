@@ -1,3 +1,3 @@
-from _common.scheme.api_environment import ApiEnvironment
+from _common.scheme.my_environment import MyEnvironment
 
-api_environment = ApiEnvironment.dev
+my_environment = MyEnvironment.dev

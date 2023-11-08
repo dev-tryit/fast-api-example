@@ -1,6 +1,6 @@
 from fastapi import Depends
 
-from _common.exception.api_exception import ApiException
+from _common.exception.my_api_exception import MyApiException
 from api.todo.todo_api import TodoApi
 from domain.self_management.scheme.vo.todo_create_vo import TodoCreateVo
 
@@ -33,7 +33,7 @@ class SelfManagementService:
             vo: TodoCreateVo,
     ) -> dict[str, object]:
         if vo.id in todo_list:
-            raise ApiException(status_code=409)
+            raise MyApiException(status_code=409)
         else:
             todo_list[vo.id] = vo.__dict__
             return todo_list[vo.id]
@@ -54,7 +54,7 @@ class SelfManagementService:
             todo_id: int,
     ):
         if not (todo_id in todo_list):
-            raise ApiException(status_code=404)
+            raise MyApiException(status_code=404)
         else:
             return todo_list.get(todo_id, {})
 
@@ -65,7 +65,7 @@ class SelfManagementService:
             is_done: bool,
     ):
         if not (todo_id in todo_list):
-            raise ApiException(status_code=404)
+            raise MyApiException(status_code=404)
         else:
             todo = todo_list.get(todo_id)
             todo['is_done'] = is_done
@@ -77,7 +77,7 @@ class SelfManagementService:
             todo_id: int,
     ):
         if not (todo_id in todo_list):
-            raise ApiException(status_code=404)
+            raise MyApiException(status_code=404)
         else:
             todo = todo_list.pop(todo_id, None)
         return todo

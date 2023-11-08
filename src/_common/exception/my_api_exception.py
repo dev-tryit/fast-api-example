@@ -1,5 +1,5 @@
 from fastapi import HTTPException
 
 
-class ApiException(HTTPException):
+class MyApiException(HTTPException):
     result_code: str

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Depends
 
-from _common.exception.api_exception import ApiException
+from _common.exception.my_api_exception import MyApiException
 from domain.self_management.scheme.request.todo_create_reqeust import TodoCreateRequest
 from domain.self_management.service import SelfManagementService
 
@@ -16,7 +16,7 @@ def create_todo(
         # TODO: validate
         response = service.create_todo(request.to_vo())
         return response
-    except ApiException as e:
+    except MyApiException as e:
         raise e
 
 
@@ -29,7 +29,7 @@ def get_todos(
         # TODO: validate
         response = service.get_todos(order)
         return response
-    except ApiException as e:
+    except MyApiException as e:
         raise e
 
 
@@ -42,7 +42,7 @@ def get_todo(
         # TODO: validate
         response = service.get_todo(todo_id)
         return response
-    except ApiException as e:
+    except MyApiException as e:
         raise e
 
 
@@ -56,7 +56,7 @@ def update_todo(
         # TODO: validate
         response = service.update_todo(todo_id, is_done)
         return response
-    except ApiException as e:
+    except MyApiException as e:
         raise e
 
 
@@ -69,5 +69,5 @@ def delete_todo(
         # TODO: validate
         response = service.delete_todo(todo_id)
         return response
-    except ApiException as e:
+    except MyApiException as e:
         raise e

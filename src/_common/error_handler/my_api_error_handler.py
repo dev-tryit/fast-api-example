@@ -4,13 +4,13 @@ import traceback
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 
-from _common.exception.api_exception import ApiException
+from _common.exception.my_api_exception import MyApiException
 
 
-class ApiErrorHandler:
+class MyApiErrorHandler:
     @staticmethod
     def handle(exc: Exception):
-        if isinstance(exc, ApiException):
+        if isinstance(exc, MyApiException):
             return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         elif isinstance(exc, HTTPException):
             return JSONResponse(status_code=500, content={"detail": "Don't Use HTTPException"})

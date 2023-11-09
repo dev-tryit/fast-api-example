@@ -1,6 +1,6 @@
 from pydantic.main import BaseModel
 
-from domain.self_management.scheme.vo.todo_create_vo import TodoCreateVo
+from domain.self_management.scheme.vo.todo_create_vo import TodoVo
 
 
 class TodoCreateRequest(BaseModel):
@@ -9,4 +9,4 @@ class TodoCreateRequest(BaseModel):
     is_done: bool
 
     def to_vo(self):
-        return TodoCreateVo(self.id, self.contents, self.is_done)
+        return TodoVo(self.id, self.contents, self.is_done)

@@ -1,3 +1,3 @@
-from _common.scheme.my_environment import MyEnvironment
+from _common.scheme.enum.my_environment import MyEnvironment
 
 my_environment = MyEnvironment.dev

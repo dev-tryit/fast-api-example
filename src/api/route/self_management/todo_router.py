@@ -1,6 +1,10 @@
+from typing import List
+
 from fastapi import APIRouter, Body, Depends
 
+from _common.scheme.response.MyResponse import MyResponse
 from domain.self_management.scheme.request.todo_create_reqeust import TodoCreateRequest
+from domain.self_management.scheme.vo.todo_create_vo import TodoVo
 from domain.self_management.service import SelfManagementService
 
 # TODO: from pydantic import BaseSettings -> env
@@ -16,33 +20,30 @@ router = APIRouter()
 def get_todos(
         order: str | None = None,
         service: SelfManagementService = Depends(),
-):
+) -> MyResponse[List[TodoVo]]:
     # TODO: validate
     result = service.get_todos(order)
-    # TODO: result to response
-    return result
+    return MyResponse(result=result)
 
 
 @router.get('/{todo_id}', status_code=200)
 def get_todo(
         todo_id: int,
         service: SelfManagementService = Depends(),
-):
+) -> MyResponse[TodoVo]:
     # TODO: validate
     result = service.get_todo(todo_id)
-    # TODO: result to response
-    return result
+    return MyResponse(result=result)
 
 
 @router.post('/', status_code=201)
 def create_todo(
         request: TodoCreateRequest,
         service: SelfManagementService = Depends(),
-):
+) -> MyResponse[TodoVo]:
     # TODO: validate
     result = service.create_todo(request.to_vo())
-    # TODO: result to response
-    return result
+    return MyResponse(result=result)
 
 
 @router.put('/{todo_id}', status_code=200)
@@ -50,19 +51,17 @@ def update_todo(
         todo_id: int,
         is_done: bool = Body(embed=True),
         service: SelfManagementService = Depends(),
-):
+) -> MyResponse[bool]:
     # TODO: validate
     result = service.update_todo(todo_id, is_done)
-    # TODO: result to response
-    return result
+    return MyResponse(result=result is not None)
 
 
 @router.delete('/{todo_id}', status_code=204)
 def delete_todo(
         todo_id: int,
         service: SelfManagementService = Depends(),
-):
+) -> MyResponse[bool]:
     # TODO: validate
     result = service.delete_todo(todo_id)
-    # TODO: result to response
-    return result
+    return MyResponse(result=result is not None)

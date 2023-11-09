@@ -37,7 +37,7 @@ class SelfManagementService:
         if vo.id in todo_by_id:
             raise MyApiException(status_code=409)
         else:
-            todo_by_id[vo.id] = vo.__dict__
+            todo_by_id[vo.id] = vo
             return todo_by_id[vo.id]
 
     # noinspection PyMethodMayBeStatic

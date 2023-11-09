@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, Boolean, String
 
 from _common.connection.mysql_connection import Base
-from domain.self_management.scheme.vo.todo_create_vo import TodoVo
 
 
 class TodoModel(Base):
@@ -16,6 +15,3 @@ class TodoModel(Base):
 
     def __str__(self):
         return f"ID: {self.id}\nContents: {self.contents}\nIs Done: {self.is_done}"
-
-    def to_vo(self):
-        return TodoVo(id=self.id, contents=self.contents, is_done=self.is_done)

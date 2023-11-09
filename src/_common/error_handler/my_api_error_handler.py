@@ -8,7 +8,7 @@ from _common.exception.my_api_exception import MyApiException
 
 class MyApiErrorHandler:
     @staticmethod
-    def handle(request: Request, exc: Exception):
+    def handle(_: Request, exc: Exception):
         if isinstance(exc, MyApiException):
             return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         elif isinstance(exc, HTTPException):

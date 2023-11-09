@@ -11,13 +11,13 @@ router = APIRouter()
 
 
 @router.get('/', status_code=200)
-def get_(
+def get_todos(
         order: str | None = None,
         service: SelfManagementService = Depends(),
 ):
     try:
         # TODO: validate
-        result = service.get_(order)
+        result = service.get_todos(order)
         # TODO: result to response
         return result
     except MyApiException as e:

@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from _common.connection.mysql_connection import get_session
-from api.todo.api import TodoApi
-from api.todo.scheme.todo_model import ToDoModel
+from repository.todo.api import TodoApi
+from repository.todo.scheme.todo_model import ToDoModel
 
 
 class TodoApiMySql(TodoApi):

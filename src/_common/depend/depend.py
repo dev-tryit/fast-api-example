@@ -3,8 +3,8 @@ from fastapi import Depends
 from _common.connection.mysql_connection import get_session
 from _common.scheme.my_environment import MyEnvironment
 from _common.setting.setting import my_environment
-from api.todo.api import TodoApi
-from api.todo.api_mysql import TodoApiMySql
+from repository.todo.api import TodoApi
+from repository.todo.api_mysql import TodoApiMySql
 
 
 def inject_dependency_by_environment(app):

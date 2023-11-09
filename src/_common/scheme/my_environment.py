@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class MyEnvironment(Enum):
-    dev = 0,
-    qa = 1,
-    prod = 2,
+    local = 0,
+    dev = 1,
+    qa = 2,
+    prod = 3,

@@ -1,8 +1,8 @@
 from fastapi import Depends
 
 from _common.exception.my_api_exception import MyApiException
-from api.todo.api_mysql import TodoApiMySql
 from domain.self_management.scheme.vo.todo_create_vo import TodoCreateVo
+from repository.todo.api_mysql import TodoApiMySql
 
 todo_list = {
     1: {

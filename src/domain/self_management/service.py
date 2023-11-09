@@ -2,7 +2,7 @@ from fastapi import Depends
 
 from _common.exception.my_api_exception import MyApiException
 from domain.self_management.scheme.vo.todo_create_vo import TodoCreateVo
-from repository.todo.api_mysql import TodoApiMySql
+from repository.todo.repository_mysql import TodoRepositoryMySql
 
 todo_list = {
     1: {
@@ -24,7 +24,7 @@ todo_list = {
 
 
 class SelfManagementService:
-    def __init__(self, todo_api: TodoApiMySql = Depends(TodoApiMySql)):
+    def __init__(self, todo_api: TodoRepositoryMySql = Depends(TodoRepositoryMySql)):
         self.todo_api = todo_api
 
     # noinspection PyMethodMayBeStatic

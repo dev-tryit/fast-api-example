@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, Boolean, String
 from _common.connection.mysql_connection import Base
 
 
-class ToDoModel(Base):
+class TodoModel(Base):
     __tablename__ = 'todo'
 
     id = Column(Integer, primary_key=True, index=True)
@@ -11,7 +11,7 @@ class ToDoModel(Base):
     is_done = Column(Boolean, nullable=False)
 
     def __repr__(self):
-        return f"ToDoModel(id={self.id}, contents='{self.contents}', is_done={self.is_done})"
+        return f"TodoModel(id={self.id}, contents='{self.contents}', is_done={self.is_done})"
 
     def __str__(self):
         return f"ID: {self.id}\nContents: {self.contents}\nIs Done: {self.is_done}"

@@ -1,7 +1,7 @@
-from api.todo.api import TodoApi
+from repository.todo.repository import TodoRepository
 
 
-class TodoApiPrinter(TodoApi):
+class TodoRepositoryPrinter(TodoRepository):
     def create(self):
         print('create')
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class TodoApi(ABC):
+class TodoRepository(ABC):
     @abstractmethod
     def create(self):
         pass

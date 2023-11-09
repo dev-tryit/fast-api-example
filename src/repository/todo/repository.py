@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 
+from repository.todo.scheme.todo_model import TodoModel
+
 
 class TodoRepository(ABC):
     @abstractmethod
-    def create(self):
+    def create(self, todo_model: TodoModel):
         pass
 
     @abstractmethod

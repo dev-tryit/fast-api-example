@@ -15,3 +15,10 @@ class TodoModel(Base):
 
     def __str__(self):
         return f"ID: {self.id}\nContents: {self.contents}\nIs Done: {self.is_done}"
+
+    @classmethod
+    def create(cls, *, contents, is_done) -> "TodoModel":
+        return cls(
+            contents=contents,
+            is_done=is_done,
+        )

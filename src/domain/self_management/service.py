@@ -6,20 +6,18 @@ from fastapi import Depends
 from _common.exception.my_api_exception import MyApiException
 from domain.self_management.scheme.vo.todo_create_vo import TodoVo
 from repository.todo.repository_mysql import TodoRepositoryMySql
+from repository.todo.scheme.todo_model import TodoModel
 
 todo_by_id: dict[int, TodoVo] = {
     1: TodoVo(
-        1,
         "실전! FastApi 섹션 0 수강",
         True,
     ),
     2: TodoVo(
-        2,
         "실전! FastApi 섹션 1 수강",
         False,
     ),
     3: TodoVo(
-        3,
         "실전! FastApi 섹션 2 수강",
         False,
     ),
@@ -27,26 +25,24 @@ todo_by_id: dict[int, TodoVo] = {
 
 
 class SelfManagementService:
-    def __init__(self, todo_api: TodoRepositoryMySql = Depends(TodoRepositoryMySql)):
-        self.todo_api = todo_api
+    def __init__(self, repository: TodoRepositoryMySql = Depends(TodoRepositoryMySql)):
+        self.repository = repository
 
     # noinspection PyMethodMayBeStatic
     def create_todo(
             self,
             vo: TodoVo,
     ) -> TodoVo:
-        if vo.id in todo_by_id:
-            raise MyApiException(status_code=409)
-        else:
-            todo_by_id[vo.id] = vo
-            return todo_by_id[vo.id]
+        todo_model = TodoModel.create(contents=vo.contents, is_done=vo.is_done)
+        todo_model = self.repository.create(todo_model)
+        return todo_model
 
     # noinspection PyMethodMayBeStatic
     def get_todos(
             self,
             order: str | None = None,
     ) -> List[TodoVo]:
-        todos = self.todo_api.get_all()
+        todos = self.repository.get_all()
 
         if order == "DESC":
             return todos[::-1]

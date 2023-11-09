@@ -57,7 +57,7 @@ def update_todo(
     return MyResponse(result=result is not None)
 
 
-@router.delete('/{todo_id}', status_code=204)
+@router.delete('/{todo_id}', status_code=200)
 def delete_todo(
         todo_id: int,
         service: SelfManagementService = Depends(),

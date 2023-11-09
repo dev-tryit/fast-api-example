@@ -5,19 +5,19 @@ from repository.todo.scheme.todo_model import TodoModel
 
 class TodoRepository(ABC):
     @abstractmethod
-    def create(self, todo_model: TodoModel):
+    def create(self, todo_model: TodoModel) -> TodoModel | None:
         pass
 
     @abstractmethod
-    def delete(self):
+    def delete(self, todo_id: int) -> TodoModel | None:
         pass
 
     @abstractmethod
-    def update(self):
+    def update(self, todo_model: TodoModel) -> TodoModel | None:
         pass
 
     @abstractmethod
-    def get(self):
+    def get(self, id: int) -> TodoModel | None:
         pass
 
     @abstractmethod

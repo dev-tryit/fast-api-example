@@ -9,4 +9,4 @@ class TodoCreateRequest:
     is_done: bool
 
     def to_vo(self):
-        return TodoVo(self.contents, self.is_done)
+        return TodoVo(id=None, contents=self.contents, is_done=self.is_done)

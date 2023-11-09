@@ -43,7 +43,7 @@ def create_todo(
     return MyResponse(result=result)
 
 
-@router.put('/{todo_id}', status_code=200)
+@router.patch('/{todo_id}', status_code=200)
 def update_todo(
         todo_id: int,
         is_done: bool = Body(embed=True),

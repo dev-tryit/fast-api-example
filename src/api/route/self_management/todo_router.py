@@ -1,10 +1,7 @@
-from typing import List
-
 from fastapi import APIRouter, Body, Depends
 
 from _common.scheme.response.MyResponse import MyResponse
 from domain.self_management.scheme.request.todo_create_reqeust import TodoCreateRequest
-from domain.self_management.scheme.vo.todo_create_vo import TodoVo
 from domain.self_management.service import SelfManagementService
 
 # TODO: from pydantic import BaseSettings -> env
@@ -20,7 +17,7 @@ router = APIRouter()
 def get_todos(
         order: str | None = None,
         service: SelfManagementService = Depends(),
-) -> MyResponse[List[TodoVo]]:
+):
     # TODO: validate
     result = service.get_todos(order)
     return MyResponse(result=result)
@@ -30,7 +27,7 @@ def get_todos(
 def get_todo(
         todo_id: int,
         service: SelfManagementService = Depends(),
-) -> MyResponse[TodoVo]:
+):
     # TODO: validate
     result = service.get_todo(todo_id)
     return MyResponse(result=result)
@@ -40,7 +37,7 @@ def get_todo(
 def create_todo(
         request: TodoCreateRequest,
         service: SelfManagementService = Depends(),
-) -> MyResponse[TodoVo]:
+):
     # TODO: validate
     result = service.create_todo(request.to_vo())
     return MyResponse(result=result)
@@ -51,7 +48,7 @@ def update_todo(
         todo_id: int,
         is_done: bool = Body(embed=True),
         service: SelfManagementService = Depends(),
-) -> MyResponse[bool]:
+):
     # TODO: validate
     result = service.update_todo(todo_id, is_done)
     return MyResponse(result=result is not None)
@@ -61,7 +58,7 @@ def update_todo(
 def delete_todo(
         todo_id: int,
         service: SelfManagementService = Depends(),
-) -> MyResponse[bool]:
+):
     # TODO: validate
     result = service.delete_todo(todo_id)
     return MyResponse(result=result is not None)

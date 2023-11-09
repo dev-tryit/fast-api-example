@@ -1,3 +1,4 @@
+from dataclasses import replace
 from typing import List
 
 from fastapi import Depends
@@ -71,8 +72,7 @@ class SelfManagementService:
             return None
 
         todo = todo_by_id.get(todo_id)
-        todo.is_done = is_done
-        return todo
+        return replace(todo, is_done=is_done)
 
     # noinspection PyMethodMayBeStatic
     def delete_todo(

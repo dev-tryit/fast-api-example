@@ -1,9 +1,10 @@
-from pydantic.main import BaseModel
+from dataclasses import dataclass
 
 from domain.self_management.scheme.vo.todo_create_vo import TodoVo
 
 
-class TodoCreateRequest(BaseModel):
+@dataclass
+class TodoCreateRequest:
     id: int
     contents: str
     is_done: bool

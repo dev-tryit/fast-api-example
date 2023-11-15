@@ -5,7 +5,7 @@ from repository.todo.scheme.todo_model import TodoModel
 
 class TodoRepository(ABC):
     @abstractmethod
-    def create(self, todo_model: TodoModel) -> TodoModel | None:
+    def create(self, todo_model: TodoModel) -> TodoModel:
         pass
 
     @abstractmethod
@@ -17,7 +17,7 @@ class TodoRepository(ABC):
         pass
 
     @abstractmethod
-    def get(self, id: int) -> TodoModel | None:
+    def get(self, todo_id: int) -> TodoModel | None:
         pass
 
     @abstractmethod

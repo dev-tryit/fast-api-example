@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, Boolean, String
 
 from _common.connection.mysql_connection import Base
-from domain.self_management.scheme.vo.todo_create_vo import TodoVo
+from domain.self_management.scheme.todo_vo import TodoVo
 
 
 class TodoModel(Base):

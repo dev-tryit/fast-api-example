@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.self_management.scheme.vo.todo_create_vo import TodoVo
+from domain.self_management.scheme.todo_vo import TodoVo
 
 
 @dataclass

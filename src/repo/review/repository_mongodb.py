@@ -3,18 +3,16 @@ from typing import List, Optional
 
 from pymongo.results import DeleteResult
 
-from domain.self_management.scheme.review_vo import ReviewVo
-from repository.review.repository import ReviewRepository
-from repository.review.scheme.review_model import ReviewModel
+from repo.review.repository import ReviewRepository
+from repo.review.scheme.review_model import ReviewModel
 
 
 class ReviewRepositoryMongodb(ReviewRepository):
 
-    async def create(self, review_vo: ReviewVo) -> ReviewModel:
-        review_model = review_vo.to_model()
+    async def create(self, review_model: ReviewModel) -> ReviewModel:
         return await review_model.create()
 
-    async def delete(self, review_id: int) -> ReviewModel | None:
+    async def delete(self, review_id: str) -> ReviewModel | None:
         try:
             review_model = await self.get(review_id)
             if review_model is None:
@@ -30,8 +28,7 @@ class ReviewRepositoryMongodb(ReviewRepository):
 
     async def update(
             self,
-            *,
-            review_id: int,
+            review_id: str,
             name: str | None,
             product: str | None,
             rating: float | None,
@@ -49,6 +46,7 @@ class ReviewRepositoryMongodb(ReviewRepository):
                 'product': product,
                 'rating': rating,
                 'review': review,
+                'date': date,
             }
             new_review_model = {k: v for k, v in new_review_model.items() if v is not None}
             return await review_model.update({"$set": {
@@ -57,7 +55,7 @@ class ReviewRepositoryMongodb(ReviewRepository):
         except(Exception,):
             return None
 
-    async def get(self, review_id: int) -> ReviewModel | None:
+    async def get(self, review_id: str) -> ReviewModel | None:
         try:
             return await ReviewModel.get(review_id)
         except(Exception,):

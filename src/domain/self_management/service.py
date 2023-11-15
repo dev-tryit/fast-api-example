@@ -1,12 +1,14 @@
+from datetime import datetime
 from typing import List
 
 from fastapi import Depends
 
 from domain.self_management.scheme.review_vo import ReviewVo
 from domain.self_management.scheme.todo_vo import TodoVo
-from repository.review.repository_mongodb import ReviewRepositoryMongodb
-from repository.todo.repository_mysql import TodoRepositoryMySql
-from repository.todo.scheme.todo_model import TodoModel
+from repo.review.repository_mongodb import ReviewRepositoryMongodb
+from repo.review.scheme.review_model import ReviewModel
+from repo.todo.repository_mysql import TodoRepositoryMySql
+from repo.todo.scheme.todo_model import TodoModel
 
 
 class SelfManagementService:
@@ -27,16 +29,17 @@ class SelfManagementService:
             self,
             vo: TodoVo,
     ) -> TodoVo:
-        todo_model = TodoModel.create(contents=vo.contents, is_done=vo.is_done)
+        todo_model = TodoModel.make(contents=vo.contents, is_done=vo.is_done)
         todo_model = self.todo_repository.create(todo_model)
-        return todo_model
+        return todo_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
     def get_todos(
             self,
             order: str | None = None,
     ) -> List[TodoVo]:
-        todos = self.todo_repository.get_all()
+        todo_models = self.todo_repository.get_all()
+        todos = list(map(lambda model: model.to_vo(), todo_models))
 
         if order == "DESC":
             return todos[::-1]
@@ -65,66 +68,90 @@ class SelfManagementService:
 
         todo_model = todo_model.change_is_done(is_done)
         todo_model = self.todo_repository.update(todo_model)
-        return todo_model
+        if todo_model is None:
+            return None
+
+        return todo_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
     def delete_todo(
             self,
             todo_id: int,
     ) -> TodoVo | None:
-        return self.todo_repository.delete(todo_id)
+        todo_model = self.todo_repository.delete(todo_id)
+        if todo_model is None:
+            return None
+
+        return todo_model
 
     '''--------------------'''
     '''--------------review'''
     '''--------------------'''
 
     # noinspection PyMethodMayBeStatic
-    def create_review(
+    async def create_review(
             self,
             vo: ReviewVo,
     ) -> ReviewVo:
-        review_model = self.review_repository.create(vo)
-        return review_model
+        review_model = ReviewModel.make(
+            name=vo.name,
+            product=vo.product,
+            rating=vo.rating,
+            review=vo.review,
+            date=vo.date,
+        )
+        review_model = await self.review_repository.create(review_model)
+        return review_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
-    def get_reviews(
+    async def get_reviews(
             self,
             order: str | None = None,
     ) -> List[ReviewVo]:
-        reviews = self.review_repository.get_all()
+        review_models = await self.review_repository.get_all()
+        reviews = list(map(lambda model: model.to_vo(), review_models))
 
         if order == "DESC":
             return reviews[::-1]
         return reviews
 
     # noinspection PyMethodMayBeStatic
-    def get_review(
+    async def get_review(
             self,
-            review_id: int,
+            review_id: str,
     ) -> ReviewVo | None:
-        review_model = self.review_repository.get(review_id)
+        review_model = await self.review_repository.get(review_id)
         if review_model is None:
             return None
 
         return review_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
-    def update_review(
+    async def update_review(
             self,
-            review_id: int,
-            is_done: bool,
+            review_id: str,
+            name: str | None,
+            product: str | None,
+            rating: float | None,
+            review: str | None,
+            date: datetime | None,
     ) -> ReviewVo | None:
-        review_model = self.review_repository.get(review_id)
+        review_model = await self.review_repository.get(review_id)
         if review_model is None:
             return None
 
-        review_model = review_model.change_is_done(is_done)
-        review_model = self.review_repository.update(review_model)
-        return review_model
+        review_model = await self.review_repository.update(review_id, name, product, rating, review, date)
+        if review_model is None:
+            return None
+        return review_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
-    def delete_review(
+    async def delete_review(
             self,
-            review_id: int,
+            review_id: str,
     ) -> ReviewVo | None:
-        return self.review_repository.delete(review_id)
+        review_model = await self.review_repository.delete(review_id)
+        if review_model is None:
+            return None
+
+        return review_model.to_vo()

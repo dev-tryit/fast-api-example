@@ -8,7 +8,7 @@ app = FastAPI()
 
 
 @app.on_event("startup")
-async def start_db():
+async def start_db() -> None:
     await init_db()
 
 

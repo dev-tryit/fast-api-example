@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from repository.review.scheme.review_model import ReviewModel
+from repo.review.scheme.review_model import ReviewModel
 
 
 class ReviewRepository(ABC):
@@ -10,13 +10,12 @@ class ReviewRepository(ABC):
         pass
 
     @abstractmethod
-    async def delete(self, review_id: int) -> ReviewModel | None:
+    async def delete(self, review_id: str) -> ReviewModel | None:
         pass
 
     @abstractmethod
     async def update(
             self,
-            *,
             review_id: str | None,
             name: str | None,
             product: str | None,
@@ -27,7 +26,7 @@ class ReviewRepository(ABC):
         pass
 
     @abstractmethod
-    async def get(self, review_id: int) -> ReviewModel | None:
+    async def get(self, review_id: str) -> ReviewModel | None:
         pass
 
     @abstractmethod

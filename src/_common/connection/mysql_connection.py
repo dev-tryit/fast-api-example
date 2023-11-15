@@ -30,5 +30,5 @@ def get_session():
 # from sqlalchemy import select
 # session.scalar(select(1))
 #
-# from repository.todo.todo_model import TodoModel
+# from repo.todo.todo_model import TodoModel
 # session.scalars(select(TodoModel))

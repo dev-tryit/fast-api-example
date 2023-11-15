@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Body, Depends
 
 from _common.scheme.response.my_response import MyResponse
+from api.route.self_management.scheme.request.review_create_reqeust import ReviewCreateRequest
 from api.route.self_management.scheme.request.todo_create_reqeust import TodoCreateRequest
 from domain.self_management.service import SelfManagementService
 
@@ -75,51 +78,55 @@ def delete_todo(
 
 
 @router.get('/review/', status_code=200)
-def get_reviews(
+async def get_reviews(
         order: str | None = None,
         service: SelfManagementService = Depends(),
 ):
     # TODO: validate
-    result = service.get_reviews(order)
+    result = await service.get_reviews(order)
     return MyResponse(result=result)
 
 
 @router.get('/review/{review_id}', status_code=200)
-def get_review(
-        review_id: int,
+async def get_review(
+        review_id: str,
         service: SelfManagementService = Depends(),
 ):
     # TODO: validate
-    result = service.get_review(review_id)
+    result = await service.get_review(review_id)
     return MyResponse(result=result)
 
 
 @router.post('/review/', status_code=201)
-def create_review(
-        request: TodoCreateRequest,
+async def create_review(
+        request: ReviewCreateRequest,
         service: SelfManagementService = Depends(),
 ):
     # TODO: validate
-    result = service.create_review(request.to_vo())
+    result = await service.create_review(request.to_vo())
     return MyResponse(result=result)
 
 
 @router.patch('/review/{review_id}', status_code=200)
-def update_review(
-        review_id: int,
-        is_done: bool = Body(embed=True),
+async def update_review(
+        review_id: str,
+        name: str | None = Body(embed=True),
+        product: str | None = Body(embed=True),
+        rating: float | None = Body(embed=True),
+        review: str | None = Body(embed=True),
+        date: datetime | None = Body(embed=True),
         service: SelfManagementService = Depends(),
 ):
     # TODO: validate
-    result = service.update_review(review_id, is_done)
+    result = await service.update_review(review_id, name, product, rating, review, date)
     return MyResponse(result=result is not None)
 
 
 @router.delete('/review/{review_id}', status_code=200)
-def delete_review(
-        review_id: int,
+async def delete_review(
+        review_id: str,
         service: SelfManagementService = Depends(),
 ):
     # TODO: validate
-    result = service.delete_review(review_id)
+    result = await service.delete_review(review_id)
     return MyResponse(result=result is not None)

@@ -18,12 +18,13 @@ class TodoModel(Base):
         return f"ID: {self.id}\nContents: {self.contents}\nIs Done: {self.is_done}"
 
     @classmethod
-    def create(cls, *, contents, is_done) -> "TodoModel":
+    def make(cls, *, contents, is_done) -> "TodoModel":
         return cls(
             contents=contents,
             is_done=is_done,
         )
 
+    # noinspection PyTypeChecker
     def to_vo(self):
         return TodoVo(
             id=self.id,

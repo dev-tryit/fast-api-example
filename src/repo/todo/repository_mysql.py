@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from _common.connection.mysql_connection import get_session
-from repository.todo.repository import TodoRepository
-from repository.todo.scheme.todo_model import TodoModel
+from repo.todo.repository import TodoRepository
+from repo.todo.scheme.todo_model import TodoModel
 
 
 class TodoRepositoryMySql(TodoRepository):

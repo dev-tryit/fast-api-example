@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from repository.todo.scheme.todo_model import TodoModel
+from repo.todo.scheme.todo_model import TodoModel
 
 
 class TodoRepository(ABC):

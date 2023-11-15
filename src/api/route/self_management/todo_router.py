@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Depends
 
-from _common.scheme.response.MyResponse import MyResponse
+from _common.scheme.response.my_response import MyResponse
 from domain.self_management.scheme.request.todo_create_reqeust import TodoCreateRequest
 from domain.self_management.service import SelfManagementService
 

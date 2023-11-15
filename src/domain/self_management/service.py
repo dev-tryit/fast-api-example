@@ -3,13 +3,12 @@ from typing import List
 from fastapi import Depends
 
 from domain.self_management.scheme.vo.todo_create_vo import TodoVo
-from repository.todo.repository import TodoRepository
 from repository.todo.repository_mysql import TodoRepositoryMySql
 from repository.todo.scheme.todo_model import TodoModel
 
 
 class SelfManagementService:
-    def __init__(self, repository: TodoRepository = Depends(TodoRepositoryMySql)):
+    def __init__(self, repository: TodoRepositoryMySql = Depends()):
         self.repository = repository
 
     # noinspection PyMethodMayBeStatic

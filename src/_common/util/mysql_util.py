@@ -27,9 +27,8 @@ class MysqlUtil:
 
     # 이터레이터 패턴을 통해서, 정리를 깔끔하게 할 수 있음.
     # Depends와 함께 쓰면, Request 당 Session 1개를 생성 가능
-    # Depends가 get_session 함수를 반환할 때, session.close()가 실행됨
     @contextmanager
-    def make_session(self):
+    def make_transition(self):
         session: Session = self.SessionFactory()
         try:
             yield session

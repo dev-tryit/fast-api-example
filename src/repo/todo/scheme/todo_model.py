@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, Boolean, String
 
-from _common.connection.mysql_connection import Base
+from _common.util.mysql_util import MysqlUtil
 from domain.self_management.scheme.todo_vo import TodoVo
 
 
-class TodoModel(Base):
+class TodoModel(MysqlUtil().Base):
     __tablename__ = 'todo'
 
     id = Column(Integer, primary_key=True, index=True)

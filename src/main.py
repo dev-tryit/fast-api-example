@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from _common.connection.mongodb_connection import init_db
 from _common.error_handler.my_api_error_handler import MyApiErrorHandler
+from _common.util.mongodb_util import MongodbUtil
 from api.route.self_management import router as self_management
 
 app = FastAPI()
@@ -9,7 +9,7 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def start_db() -> None:
-    await init_db()
+    await MongodbUtil().init_db()
 
 
 app.add_exception_handler(Exception, MyApiErrorHandler.handle)

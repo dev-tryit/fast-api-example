@@ -31,7 +31,7 @@ class SelfManagementService:
             self,
             vo: TodoVo,
     ) -> TodoVo:
-        with MysqlUtil().make_session() as s:
+        with MysqlUtil().make_transition() as s:
             todo_model = TodoModel.make(contents=vo.contents, is_done=vo.is_done)
             todo_model = self.todo_repository.create(s, todo_model)
             return todo_model.to_vo()
@@ -41,7 +41,7 @@ class SelfManagementService:
             self,
             order: str | None = None,
     ) -> List[TodoVo]:
-        with MysqlUtil().make_session() as s:
+        with MysqlUtil().make_transition() as s:
             todo_models = self.todo_repository.get_all(s)
             todos = list(map(lambda model: model.to_vo(), todo_models))
 
@@ -54,7 +54,7 @@ class SelfManagementService:
             self,
             todo_id: int,
     ) -> TodoVo | None:
-        with MysqlUtil().make_session() as s:
+        with MysqlUtil().make_transition() as s:
             todo_model = self.todo_repository.get(s, todo_id)
             if todo_model is None:
                 return None
@@ -67,7 +67,7 @@ class SelfManagementService:
             todo_id: int,
             is_done: bool,
     ) -> TodoVo | None:
-        with MysqlUtil().make_session() as s:
+        with MysqlUtil().make_transition() as s:
             todo_model = self.todo_repository.get(s, todo_id)
             if todo_model is None:
                 return None
@@ -84,7 +84,7 @@ class SelfManagementService:
             self,
             todo_id: int,
     ) -> TodoVo | None:
-        with MysqlUtil().make_session() as s:
+        with MysqlUtil().make_transition() as s:
             todo_model = self.todo_repository.delete(s, todo_id)
             if todo_model is None:
                 return None

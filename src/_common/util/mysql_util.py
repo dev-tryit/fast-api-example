@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -7,21 +9,27 @@ from _common.decorator.singleton import singleton
 
 @singleton
 class MysqlUtil:
-    DATABASE_URL = "mysql+pymysql://root:q1w2e3r4!@127.0.0.1:3306/fast_api_example"
 
-    engine = create_engine(
-        DATABASE_URL,
-        echo=True,
-        # pool_recycle=3600,
-        # pool_size=5,
-    )
-    Base = declarative_base()
-    Base.metadata.create_all(bind=engine)
-    SessionFactory = sessionmaker(bind=engine, autocommit=False, autoflush=False, )
+    def __init__(self):
+        self.DATABASE_URL = "mysql+pymysql://root:q1w2e3r4!@127.0.0.1:3306/fast_api_example"
+        self.Base = declarative_base()
+        self.engine = create_engine(
+            self.DATABASE_URL,
+            echo=True,
+            # pool_recycle=3600,
+            # pool_size=5,
+        )
+        self.Base.metadata.create_all(bind=self.engine)
+        self.SessionFactory = None
+
+    async def init_db(self):
+        self.SessionFactory = sessionmaker(bind=self.engine, autocommit=False, autoflush=False)
 
     # 이터레이터 패턴을 통해서, 정리를 깔끔하게 할 수 있음.
     # Depends와 함께 쓰면, Request 당 Session 1개를 생성 가능
-    def get_session(self):
+    # Depends가 get_session 함수를 반환할 때, session.close()가 실행됨
+    @contextmanager
+    def make_session(self):
         session = self.SessionFactory()
         try:
             yield session

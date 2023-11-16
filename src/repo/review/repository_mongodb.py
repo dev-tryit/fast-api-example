@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
+from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult
 
 from repo.review.repository import ReviewRepository
@@ -9,25 +10,27 @@ from repo.review.scheme.review_model import ReviewModel
 
 class ReviewRepositoryMongodb(ReviewRepository):
 
-    async def create(self, review_model: ReviewModel) -> ReviewModel:
-        return await review_model.create()
+    async def create(self, session: ClientSession, review_model: ReviewModel) -> ReviewModel:
+        review_model = await review_model.create(session)
+        return review_model
 
-    async def delete(self, review_id: str) -> ReviewModel | None:
+    async def delete(self, session: ClientSession, review_id: str) -> ReviewModel | None:
         try:
-            review_model = await self.get(review_id)
+            review_model = await self.get(session, review_id)
             if review_model is None:
                 return None
 
-            delete_result: Optional[DeleteResult] = await review_model.delete()
+            delete_result: Optional[DeleteResult] = await review_model.delete(session)
             if delete_result.deleted_count <= 0:
                 return None
 
             return review_model
-        except(Exception,):
+        except(Exception,) as e:
             return None
 
     async def update(
             self,
+            session: ClientSession,
             review_id: str,
             name: str | None,
             product: str | None,
@@ -36,35 +39,39 @@ class ReviewRepositoryMongodb(ReviewRepository):
             date: datetime | None,
     ) -> ReviewModel | None:
         try:
-            review_model = await self.get(review_id)
+            review_model = await self.get(session, review_id)
             if review_model is None:
                 return None
 
-            new_review_model = {
-                'review_id': review_id,
-                'name': name,
-                'product': product,
-                'rating': rating,
-                'review': review,
-                'date': date,
-            }
-            new_review_model = {k: v for k, v in new_review_model.items() if v is not None}
-            return await review_model.update({"$set": {
-                key: value for key, value in new_review_model.items()
-            }})
-        except(Exception,):
+            if name is not None:
+                review_model.name = name
+
+            if product is not None:
+                review_model.product = product
+
+            if rating is not None:
+                review_model.rating = rating
+
+            if review is not None:
+                review_model.review = review
+
+            if date is not None:
+                review_model.date = date
+
+            return await review_model.replace(False, session)
+        except(Exception,) as e:
             return None
 
-    async def get(self, review_id: str) -> ReviewModel | None:
+    async def get(self, session: ClientSession, review_id: str) -> ReviewModel | None:
         try:
-            return await ReviewModel.get(review_id)
-        except(Exception,):
+            return await ReviewModel.get(review_id, session)
+        except(Exception,) as e:
             return None
 
-    async def get_all(self) -> List[ReviewModel]:
+    async def get_all(self, session: ClientSession) -> List[ReviewModel]:
         try:
-            return await ReviewModel.find_all().to_list()
-        except(Exception,):
+            return await ReviewModel.find_all(None, None, None, None, session).to_list()
+        except(Exception,) as e:
             return []
 
     # await ReviewModel.find_one(ReviewModel.rating == 4.0)

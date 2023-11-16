@@ -2,7 +2,9 @@ from datetime import datetime
 from typing import List
 
 from fastapi import Depends
+from pymongo.client_session import ClientSession
 
+from _common.util.mysql_util import MysqlUtil
 from domain.self_management.scheme.review_vo import ReviewVo
 from domain.self_management.scheme.todo_vo import TodoVo
 from repo.review.repository_mongodb import ReviewRepositoryMongodb
@@ -29,32 +31,35 @@ class SelfManagementService:
             self,
             vo: TodoVo,
     ) -> TodoVo:
-        todo_model = TodoModel.make(contents=vo.contents, is_done=vo.is_done)
-        todo_model = self.todo_repository.create(todo_model)
-        return todo_model.to_vo()
+        with MysqlUtil().make_session() as s:
+            todo_model = TodoModel.make(contents=vo.contents, is_done=vo.is_done)
+            todo_model = self.todo_repository.create(s, todo_model)
+            return todo_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
     def get_todos(
             self,
             order: str | None = None,
     ) -> List[TodoVo]:
-        todo_models = self.todo_repository.get_all()
-        todos = list(map(lambda model: model.to_vo(), todo_models))
+        with MysqlUtil().make_session() as s:
+            todo_models = self.todo_repository.get_all(s)
+            todos = list(map(lambda model: model.to_vo(), todo_models))
 
-        if order == "DESC":
-            return todos[::-1]
-        return todos
+            if order == "DESC":
+                return todos[::-1]
+            return todos
 
     # noinspection PyMethodMayBeStatic
     def get_todo(
             self,
             todo_id: int,
     ) -> TodoVo | None:
-        todo_model = self.todo_repository.get(todo_id)
-        if todo_model is None:
-            return None
+        with MysqlUtil().make_session() as s:
+            todo_model = self.todo_repository.get(s, todo_id)
+            if todo_model is None:
+                return None
 
-        return todo_model.to_vo()
+            return todo_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
     def update_todo(
@@ -62,27 +67,29 @@ class SelfManagementService:
             todo_id: int,
             is_done: bool,
     ) -> TodoVo | None:
-        todo_model = self.todo_repository.get(todo_id)
-        if todo_model is None:
-            return None
+        with MysqlUtil().make_session() as s:
+            todo_model = self.todo_repository.get(s, todo_id)
+            if todo_model is None:
+                return None
 
-        todo_model = todo_model.change_is_done(is_done)
-        todo_model = self.todo_repository.update(todo_model)
-        if todo_model is None:
-            return None
+            todo_model = todo_model.change_is_done(is_done)
+            todo_model = self.todo_repository.update(s, todo_model)
+            if todo_model is None:
+                return None
 
-        return todo_model.to_vo()
+            return todo_model.to_vo()
 
     # noinspection PyMethodMayBeStatic
     def delete_todo(
             self,
             todo_id: int,
     ) -> TodoVo | None:
-        todo_model = self.todo_repository.delete(todo_id)
-        if todo_model is None:
-            return None
+        with MysqlUtil().make_session() as s:
+            todo_model = self.todo_repository.delete(s, todo_id)
+            if todo_model is None:
+                return None
 
-        return todo_model
+            return todo_model
 
     '''--------------------'''
     '''--------------review'''
@@ -93,38 +100,53 @@ class SelfManagementService:
             self,
             vo: ReviewVo,
     ) -> ReviewVo:
-        review_model = ReviewModel.make(
-            name=vo.name,
-            product=vo.product,
-            rating=vo.rating,
-            review=vo.review,
-            date=vo.date,
-        )
-        review_model = await self.review_repository.create(review_model)
-        return review_model.to_vo()
+        async def transaction(s: ClientSession | None):
+            review_model = ReviewModel.make(
+                name=vo.name,
+                product=vo.product,
+                rating=vo.rating,
+                review=vo.review,
+                date=vo.date,
+            )
+            review_model = await self.review_repository.create(s, review_model)
+            return review_model.to_vo()
+
+        return await transaction(None)
+        # session = await MongodbUtil().make_session()
+        # return await session.with_transaction(transaction)
 
     # noinspection PyMethodMayBeStatic
     async def get_reviews(
             self,
             order: str | None = None,
     ) -> List[ReviewVo]:
-        review_models = await self.review_repository.get_all()
-        reviews = list(map(lambda model: model.to_vo(), review_models))
+        async def transaction(s: ClientSession | None):
+            review_models = await self.review_repository.get_all(s)
+            reviews = list(map(lambda model: model.to_vo(), review_models))
 
-        if order == "DESC":
-            return reviews[::-1]
-        return reviews
+            if order == "DESC":
+                return reviews[::-1]
+            return reviews
+
+        return await transaction(None)
+        # async with MongodbUtil().make_session() as session:
+        #     return await session.with_transaction(transaction)
 
     # noinspection PyMethodMayBeStatic
     async def get_review(
             self,
             review_id: str,
     ) -> ReviewVo | None:
-        review_model = await self.review_repository.get(review_id)
-        if review_model is None:
-            return None
+        async def transaction(s: ClientSession | None):
+            review_model = await self.review_repository.get(s, review_id)
+            if review_model is None:
+                return None
 
-        return review_model.to_vo()
+            return review_model.to_vo()
+
+        return await transaction(None)
+        # async with MongodbUtil().make_session() as session:
+        #     return await session.with_transaction(transaction)
 
     # noinspection PyMethodMayBeStatic
     async def update_review(
@@ -136,22 +158,32 @@ class SelfManagementService:
             review: str | None,
             date: datetime | None,
     ) -> ReviewVo | None:
-        review_model = await self.review_repository.get(review_id)
-        if review_model is None:
-            return None
+        async def transaction(s: ClientSession | None):
+            review_model = await self.review_repository.get(s, review_id)
+            if review_model is None:
+                return None
 
-        review_model = await self.review_repository.update(review_id, name, product, rating, review, date)
-        if review_model is None:
-            return None
-        return review_model.to_vo()
+            review_model = await self.review_repository.update(s, review_id, name, product, rating, review, date)
+            if review_model is None:
+                return None
+            return review_model.to_vo()
+
+        return await transaction(None)
+        # async with MongodbUtil().make_session() as session:
+        #     return await session.with_transaction(transaction)
 
     # noinspection PyMethodMayBeStatic
     async def delete_review(
             self,
             review_id: str,
     ) -> ReviewVo | None:
-        review_model = await self.review_repository.delete(review_id)
-        if review_model is None:
-            return None
+        async def transaction(s: ClientSession | None):
+            review_model = await self.review_repository.delete(s, review_id)
+            if review_model is None:
+                return None
 
-        return review_model.to_vo()
+            return review_model.to_vo()
+
+        return await transaction(None)
+        # async with MongodbUtil().make_session() as session:
+        #     return await session.with_transaction(transaction)

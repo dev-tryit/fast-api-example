@@ -1,46 +1,41 @@
 from typing import List
 
-from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from _common.util.mysql_util import MysqlUtil
 from repo.todo.repository import TodoRepository
 from repo.todo.scheme.todo_model import TodoModel
 
 
 class TodoRepositoryMySql(TodoRepository):
-    def __init__(self, session: Session = Depends(MysqlUtil().get_session)):
-        self.session = session
-
-    def create(self, todo_model: TodoModel) -> TodoModel:
-        self.session.add(instance=todo_model)
-        self.session.commit()  # save
-        self.session.refresh(instance=todo_model)  # read (load id)
+    def create(self, session: Session, todo_model: TodoModel) -> TodoModel:
+        session.add(instance=todo_model)
+        session.commit()  # save
+        session.refresh(instance=todo_model)  # read (load id)
         return todo_model
 
-    def delete(self, todo_id: int) -> TodoModel | None:
-        todo_model = self.get(todo_id)
+    def delete(self, session: Session, todo_id: int) -> TodoModel | None:
+        todo_model = self.get(session, todo_id)
         if todo_model is None:
             return None
 
-        self.session.delete(todo_model)
-        self.session.commit()  # save
+        session.delete(todo_model)
+        session.commit()  # save
 
-        deleted_todo_model = self.get(todo_id)
+        deleted_todo_model = self.get(session, todo_id)
         if deleted_todo_model:
             return None
 
         return todo_model
 
-    def update(self, todo_model: TodoModel) -> TodoModel | None:
-        self.session.add(instance=todo_model)
-        self.session.commit()  # save
-        self.session.refresh(instance=todo_model)  # read (load id)
+    def update(self, session: Session, todo_model: TodoModel) -> TodoModel | None:
+        session.add(instance=todo_model)
+        session.commit()  # save
+        session.refresh(instance=todo_model)  # read (load id)
         return todo_model
 
-    def get(self, todo_id: int) -> TodoModel | None:
-        return self.session.scalar(select(TodoModel).where(TodoModel.id == todo_id))
+    def get(self, session: Session, todo_id: int) -> TodoModel | None:
+        return session.scalar(select(TodoModel).where(TodoModel.id == todo_id))
 
-    def get_all(self) -> List[TodoModel]:
-        return list(self.session.scalars(select(TodoModel)))
+    def get_all(self, session: Session) -> List[TodoModel]:
+        return list(session.scalars(select(TodoModel)))

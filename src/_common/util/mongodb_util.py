@@ -11,15 +11,15 @@ from repo.review.scheme.review_model import ReviewModel
 
 @singleton
 class MongodbUtil:
-    DATABASE_URL = "mongodb://root:q1w2e3r4!@127.0.0.1:27017"
+
+    def __init__(self):
+        self.DATABASE_URL = "mongodb://root:q1w2e3r4!@127.0.0.1:27017"
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(self.DATABASE_URL)
 
     async def init_db(self):
-        client = motor.motor_asyncio.AsyncIOMotorClient(self.DATABASE_URL)
-
-        await init_beanie(database=client.db_name, document_models=[ReviewModel])
+        await init_beanie(database=self.client.db_name, document_models=[ReviewModel])
 
     @asynccontextmanager
-    async def start_transaction(self) -> AsyncIterator[AgnosticClientSession]:
-        async with await self._client.start_session() as session:
-            async with session.start_transaction():
-                yield session
+    async def make_session(self) -> AsyncIterator[AgnosticClientSession]:
+        async with await self.client.start_session() as session:
+            yield session

@@ -10,7 +10,7 @@ from repo.todo.scheme.todo_model import TodoModel
 class TodoRepositoryMySql(TodoRepository):
     def create(self, session: Session, todo_model: TodoModel) -> TodoModel:
         session.add(instance=todo_model)
-        session.commit()  # save
+        session.flush()  # save (commit은 되돌릴 수 없고, flush는 반영은 하되 되돌릴 수 있음)
         session.refresh(instance=todo_model)  # read (load id)
         return todo_model
 
@@ -20,7 +20,7 @@ class TodoRepositoryMySql(TodoRepository):
             return None
 
         session.delete(todo_model)
-        session.commit()  # save
+        session.flush()  # save (commit은 되돌릴 수 없고, flush는 반영은 하되 되돌릴 수 있음)
 
         deleted_todo_model = self.get(session, todo_id)
         if deleted_todo_model:
@@ -30,7 +30,7 @@ class TodoRepositoryMySql(TodoRepository):
 
     def update(self, session: Session, todo_model: TodoModel) -> TodoModel | None:
         session.add(instance=todo_model)
-        session.commit()  # save
+        session.flush()  # save (commit은 되돌릴 수 없고, flush는 반영은 하되 되돌릴 수 있음)
         session.refresh(instance=todo_model)  # read (load id)
         return todo_model
 

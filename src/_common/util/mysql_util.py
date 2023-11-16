@@ -2,7 +2,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from _common.decorator.singleton import singleton
 
@@ -30,9 +30,13 @@ class MysqlUtil:
     # Depends가 get_session 함수를 반환할 때, session.close()가 실행됨
     @contextmanager
     def make_session(self):
-        session = self.SessionFactory()
+        session: Session = self.SessionFactory()
         try:
             yield session
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
         finally:
             session.close()
 

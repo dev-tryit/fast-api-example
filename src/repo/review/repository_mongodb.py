@@ -54,12 +54,12 @@ class ReviewRepositoryMongodb(ReviewRepository):
         if date is not None:
             review_model.date = date
 
-        return await review_model.replace(False, session)
+        return await review_model.replace(session=session)
 
     async def get(self, session: ClientSession, review_id: str) -> ReviewModel | None:
         return await ReviewModel.get(review_id, session)
 
     async def get_all(self, session: ClientSession) -> List[ReviewModel]:
-        return await ReviewModel.find_all(None, None, None, None, session).to_list()
+        return await ReviewModel.find_all(session=session).to_list()
 
     # await ReviewModel.find_one(ReviewModel.rating == 4.0)

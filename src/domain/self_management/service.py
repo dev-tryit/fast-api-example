@@ -112,7 +112,7 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_transition(transaction) as result:
+        # async with MongodbUtil().make_transition(transaction:transaction) as result:
         #     return result
 
     # noinspection PyMethodMayBeStatic
@@ -129,7 +129,7 @@ class SelfManagementService:
             return reviews
 
         return await transaction(None)
-        # async with MongodbUtil().make_transition(transaction) as result:
+        # async with MongodbUtil().make_transition(transaction:transaction) as result:
         #     return result
 
     # noinspection PyMethodMayBeStatic
@@ -145,7 +145,7 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_transition(transaction) as result:
+        # async with MongodbUtil().make_transition(transaction:transaction) as result:
         #     return result
 
     # noinspection PyMethodMayBeStatic
@@ -169,7 +169,7 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_transition(transaction) as result:
+        # async with MongodbUtil().make_transition(transaction:transaction) as result:
         #     return result
 
     # noinspection PyMethodMayBeStatic
@@ -185,5 +185,5 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_transition(transaction) as result:
+        # async with MongodbUtil().make_transition(transaction:transaction) as result:
         #     return result

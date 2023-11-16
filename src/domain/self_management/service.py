@@ -112,8 +112,8 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # session = await MongodbUtil().make_session()
-        # return await session.with_transaction(transaction)
+        # async with MongodbUtil().make_transition(transaction) as result:
+        #     return result
 
     # noinspection PyMethodMayBeStatic
     async def get_reviews(
@@ -129,8 +129,8 @@ class SelfManagementService:
             return reviews
 
         return await transaction(None)
-        # async with MongodbUtil().make_session() as session:
-        #     return await session.with_transaction(transaction)
+        # async with MongodbUtil().make_transition(transaction) as result:
+        #     return result
 
     # noinspection PyMethodMayBeStatic
     async def get_review(
@@ -145,8 +145,8 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_session() as session:
-        #     return await session.with_transaction(transaction)
+        # async with MongodbUtil().make_transition(transaction) as result:
+        #     return result
 
     # noinspection PyMethodMayBeStatic
     async def update_review(
@@ -169,8 +169,8 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_session() as session:
-        #     return await session.with_transaction(transaction)
+        # async with MongodbUtil().make_transition(transaction) as result:
+        #     return result
 
     # noinspection PyMethodMayBeStatic
     async def delete_review(
@@ -185,5 +185,5 @@ class SelfManagementService:
             return review_model.to_vo()
 
         return await transaction(None)
-        # async with MongodbUtil().make_session() as session:
-        #     return await session.with_transaction(transaction)
+        # async with MongodbUtil().make_transition(transaction) as result:
+        #     return result

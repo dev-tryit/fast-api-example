@@ -1,60 +1,26 @@
-from datetime import datetime
 from typing import Optional, Union, Dict, Any
 
-from beanie import Document, PydanticObjectId
-from fastapi import Depends, Request
+from beanie import PydanticObjectId
+from fastapi import Request
 from fastapi.openapi.models import Response
-from fastapi_users import schemas, BaseUserManager, InvalidPasswordException
-from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
-from fastapi_users_db_beanie import BeanieBaseUser, BeanieUserDatabase, ObjectIDIDMixin
-from passlib.handlers.bcrypt import bcrypt
-from pymongo.client_session import ClientSession
+from fastapi_users import BaseUserManager, InvalidPasswordException
+from fastapi_users_db_beanie import ObjectIDIDMixin
 
-from _common.decorator.singleton import singleton
-
-FASTAPI_USERS_SECRET = "46F865AF-CEEA-4DD8-BDC6-94844209C13C"
-
-
-class MyCustomUserProperties:
-    first_name: str
-    birthdate: Optional[datetime.date]
-
-
-# BaseUser는 기본 필드와 유효성 검사를 제공합니다.
-class UserModel(MyCustomUserProperties, BeanieBaseUser, Document):
-    # id(ID): 사용자의 고유 식별자입니다. 이것은 UUID나 정수와 같은 귀하의 ID 유형과 일치합니다.
-    # email(str): 사용자의 이메일. email-validator에 의해 검증됨.
-    # is_active(bool)  : 사용자가 활성 상태인지 여부. 활성 상태가 아닐 경우, 로그인 및 비밀번호 찾기 요청이 거부됩니다. 기본값은 True입니다.
-    # is_verified(bool)  : 사용자가 인증되었는지 여부. 선택 사항이지만 인증 라우터 로직에 도움이 됩니다. 기본값은 False입니다.
-    # is_superuser(bool)  : 사용자가 수퍼유저인지 여부. 관리 로직을 구현하는 데 유용합니다. 기본값은 거짓입니다.
-    pass
-
-
-class UserReadRequest(MyCustomUserProperties, schemas.BaseUser[PydanticObjectId]):
-    pass
-
-
-# BaseCreateUser는 사용자 등록에 전념하며, 필수 이메일과 비밀번호 필드로 구성됩니다.
-class UserCreateRequest(MyCustomUserProperties, schemas.BaseUserCreate):
-    pass
-
-
-# BaseUpdateUser는 사용자 프로필 업데이트에 전념하며, 선택적인 비밀번호 필드를 추가합니다.
-class UserUpdateRequest(MyCustomUserProperties, schemas.BaseUserUpdate):
-    pass
+from _common.util.fastapi_users.scheme.mongodb.user_model import UserModel
+from _common.util.fastapi_users.scheme.request.user_create_request import UserCreateRequest
 
 
 class UserManager(ObjectIDIDMixin, BaseUserManager[UserModel, PydanticObjectId]):
-    '''
+    """
     reset_password_token_secret: Secret to encode reset password token. Use a strong passphrase and keep it secure.
     reset_password_token_lifetime_seconds: Lifetime of reset password token. Defaults to 3600.
     reset_password_token_audience: JWT audience of reset password token. Defaults to fastapi-users:reset.
     verification_token_secret: Secret to encode verification token. Use a strong passphrase and keep it secure.
     verification_token_lifetime_seconds: Lifetime of verification token. Defaults to 3600.
     verification_token_audience: JWT audience of verification token. Defaults to fastapi-users:verify.
-    '''
-    reset_password_token_secret = FASTAPI_USERS_SECRET
-    verification_token_secret = FASTAPI_USERS_SECRET
+    """
+    reset_password_token_secret = "3949D7E4-5614-4B57-97A2-AD1462626B69"
+    verification_token_secret = "3AC75B8C-3321-4CBA-B5D9-7E96131D613E"
 
     async def validate_password(
             self,
@@ -123,43 +89,3 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[UserModel, PydanticObjectId])
     async def on_after_delete(self, user: UserModel, request: Optional[Request] = None):
         # 삭제된 것에 대해 관리자에게 이메일을 보내고 싶을 수 있습니다.
         print(f"User {user.id} is successfully deleted")
-
-
-@singleton
-class FastapiUsersUtil:
-    def __init__(self):
-        bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
-
-        def get_jwt_strategy() -> JWTStrategy:
-            return JWTStrategy(
-                secret=FASTAPI_USERS_SECRET,
-                lifetime_seconds=3600,  # 60분
-                token_audience=["fastapi-users:auth"],  # 검증자들을 넣으면된다. 현재는 fastapi-users:auth가 검증한다.
-                algorithm="HS256"
-            )
-
-        self.auth_backend = AuthenticationBackend(
-            name="jwt",
-            transport=bearer_transport,
-            get_strategy=get_jwt_strategy,
-        )
-
-    def verify_password(self, plain_password, hashed_password):
-        return bcrypt.verify(plain_password, hashed_password)
-
-    async def authenticate_user(self, session: ClientSession, email: str, password: str):
-        user = await UserModel.find(UserModel.email == email, session=session).first_or_none()
-
-        if not user:
-            return False
-        if not self.verify_password(password, user.hashed_password):
-            return False
-        return user
-
-
-async def get_user_db():
-    yield BeanieUserDatabase(UserModel)
-
-
-async def get_user_manager(user_db=Depends(get_user_db)):
-    yield UserManager(user_db)

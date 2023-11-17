@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pymongo.client_session import ClientSession
 
 from _common.exception.my_api_exception import MyApiException
-from _common.util.fastapi_users_util import FastapiUsersUtil
+from _common.util.fastapi_users.util import FastapiUsersUtil
 
 router = APIRouter()
 

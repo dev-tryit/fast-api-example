@@ -17,6 +17,8 @@ class MongodbUtil:
     def __init__(self):
         self.DATABASE_URL = "mongodb://root:q1w2e3r4!@127.0.0.1:27017"
         self.client = motor.motor_asyncio.AsyncIOMotorClient(self.DATABASE_URL, uuidRepresentation="standard")
+        # https://pymongo.readthedocs.io/en/4.6.0/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient
+        # pool 관련 내용 설정 가능
 
     async def init_db(self):
         await init_beanie(database=self.client.db_name, document_models=[UserModel, ReviewModel])

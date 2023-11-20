@@ -1,15 +1,21 @@
 from fastapi import APIRouter, Body
+from firebase_admin._auth_utils import UserNotFoundError
 
+from _common.exception.my_api_exception import MyApiException
 from _common.scheme.response.my_response import MyResponse
 from _common.util.firebase_admin_util import FirebaseAdminUtil
 
 router = APIRouter()
 
 
-@router.post("/token")
-async def create_token(
+@router.patch("/token")
+async def set_custom_user_claims(
         uid: str = Body(embed=True),
         claims: dict = Body(embed=True),
 ):
-    firebase_token_including_claims = FirebaseAdminUtil().get_auth().create_custom_token(uid, claims)
-    return MyResponse(result=firebase_token_including_claims)
+    try:
+        FirebaseAdminUtil().get_auth().set_custom_user_claims(uid, claims)
+    except UserNotFoundError as e:
+        raise MyApiException(status_code=404, detail=e.default_message)
+
+    return MyResponse(result=True)

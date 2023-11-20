@@ -8,7 +8,7 @@ from _common.util.firebase_admin_util import FirebaseAdminUtil
 router = APIRouter()
 
 
-@router.patch("/token")
+@router.patch("/token", status_code=200)
 async def set_custom_user_claims(
         uid: str = Body(embed=True),
         claims: dict = Body(embed=True),

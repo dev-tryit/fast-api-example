@@ -1,3 +1,4 @@
+import contextlib
 from enum import Enum
 from typing import Optional, List, Union
 
@@ -25,29 +26,30 @@ async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
 
 
-def _get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(
-        secret=SECRET,
-        lifetime_seconds=3600,  # 60분
-        token_audience=["fastapi-users:auth"],  # 검증자들을 넣으면된다. 현재는 fastapi-users:auth가 검증한다.
-        algorithm="HS256"
+class FastapiUsersUtil:
+    @staticmethod
+    def get_jwt_strategy() -> JWTStrategy:
+        return JWTStrategy(
+            secret=SECRET,
+            lifetime_seconds=3600,  # 60분
+            token_audience=["fastapi-users:auth"],  # 검증자들을 넣으면된다. 현재는 fastapi-users:auth가 검증한다.
+            algorithm="HS256"
+        )
+
+    bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+    auth_backend = AuthenticationBackend(
+        name="jwt",
+        transport=bearer_transport,
+        get_strategy=get_jwt_strategy,
+    )
+    fastapi_users = FastAPIUsers[UserModel, PydanticObjectId](
+        get_user_manager,
+        [auth_backend],
     )
 
-
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
-auth_backend = AuthenticationBackend(
-    name="jwt",
-    transport=bearer_transport,
-    get_strategy=_get_jwt_strategy,
-)
-fastapi_users = FastAPIUsers[UserModel, PydanticObjectId](
-    get_user_manager,
-    [auth_backend],
-)
-
-
-class FastapiUsersUtil:
     current_active_user = fastapi_users.current_user(active=True)
+    get_user_db_context = contextlib.asynccontextmanager(get_user_db)
+    get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 
     @staticmethod
     def add_routers(
@@ -58,14 +60,15 @@ class FastapiUsersUtil:
             user_prefix: str = "",
             user_tags: Optional[List[Union[str, Enum]]] = None,
     ):
-        app.include_router(fastapi_users.get_auth_router(auth_backend), prefix=f"{auth_prefix}/jwt",
+        _ = FastapiUsersUtil
+        app.include_router(_.fastapi_users.get_auth_router(_.auth_backend), prefix=f"{auth_prefix}/jwt",
                            tags=auth_tags)
-        app.include_router(fastapi_users.get_register_router(UserReadRequest, UserCreateRequest),
+        app.include_router(_.fastapi_users.get_register_router(UserReadRequest, UserCreateRequest),
                            prefix=f"{auth_prefix}",
                            tags=auth_tags)
-        app.include_router(fastapi_users.get_reset_password_router(), prefix=f"{auth_prefix}", tags=auth_tags)
-        app.include_router(fastapi_users.get_verify_router(UserReadRequest), prefix=f"{auth_prefix}",
+        app.include_router(_.fastapi_users.get_reset_password_router(), prefix=f"{auth_prefix}", tags=auth_tags)
+        app.include_router(_.fastapi_users.get_verify_router(UserReadRequest), prefix=f"{auth_prefix}",
                            tags=auth_tags)
-        app.include_router(fastapi_users.get_users_router(UserReadRequest, UserUpdateRequest),
+        app.include_router(_.fastapi_users.get_users_router(UserReadRequest, UserUpdateRequest),
                            prefix=f"{user_prefix}",
                            tags=user_tags)

@@ -7,7 +7,7 @@ from motor.core import AgnosticClientSession
 from pymongo.client_session import ClientSession
 
 from _common.decorator.singleton import singleton
-from _common.util.fastapi_users.util import UserModel
+from _common.util.fastapi_users.fastapi_users_util import UserModel
 from repo.review.scheme.review_model import ReviewModel
 
 
